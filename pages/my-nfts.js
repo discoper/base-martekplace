@@ -1,73 +1,91 @@
-import { ethers } from 'ethers'
-import { useEffect, useState } from 'react'
-import axios from 'axios'
-import Web3Modal from 'web3modal'
-import { useRouter } from 'next/router'
-
-import {
-  marketplaceAddress
-} from '../config'
-
-import NFTMarketplace from '../artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json'
+import { ethers } from "ethers";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useRouter } from "next/router";
+import { useBlockChainContext } from "../context/BlockChainContext";
+import styles from "../styles/Home.module.scss";
 
 export default function MyAssets() {
-  const [nfts, setNfts] = useState([])
-  const [loadingState, setLoadingState] = useState('not-loaded')
-  const router = useRouter()
+  const { contract, provider } = useBlockChainContext();
+  const [nfts, setNfts] = useState([]);
+  const [loadingState, setLoadingState] = useState("not-loaded");
+  const router = useRouter();
   useEffect(() => {
-    loadNFTs()
-  }, [])
+    loadNFTs();
+  }, []);
+
   async function loadNFTs() {
-    const web3Modal = new Web3Modal({
-      network: "mainnet",
-      cacheProvider: true,
-    })
-    const connection = await web3Modal.connect()
-    const provider = new ethers.providers.Web3Provider(connection)
-    const signer = provider.getSigner()
+    if (!provider) return;
+    try {
+      const data = await contract
+        .connect(await provider.getSigner())
+        .fetchMyNFTs();
+      console.log(data);
 
-    const marketplaceContract = new ethers.Contract(marketplaceAddress, NFTMarketplace.abi, signer)
-    const data = await marketplaceContract.fetchMyNFTs()
-
-    const items = await Promise.all(data.map(async i => {
-      const tokenURI = await marketplaceContract.tokenURI(i.tokenId)
-      const meta = await axios.get(tokenURI)
-      let price = ethers.utils.formatUnits(i.price.toString(), 'ether')
-      let item = {
-        price,
-        tokenId: i.tokenId.toNumber(),
-        seller: i.seller,
-        owner: i.owner,
-        image: meta.data.image,
-        tokenURI
-      }
-      return item
-    }))
-    setNfts(items)
-    setLoadingState('loaded') 
+      const items = await Promise.all(
+        data.map(async (i) => {
+          const tokenURI = await contract.tokenURI(i.tokenId);
+          console.log(tokenURI);
+          const meta = await axios.get(tokenURI);
+          let price = ethers.utils.formatUnits(i.price.toString(), "ether");
+          let item = {
+            price,
+            tokenId: i.tokenId.toNumber(),
+            seller: i.seller,
+            owner: i.owner,
+            image: meta.data.image,
+            tokenURI,
+            description: meta.data.description,
+          };
+          return item;
+        })
+      );
+      setNfts(items);
+      setLoadingState("loaded");
+    } catch (err) {
+      alert("Algo salio mal");
+      console.log(err);
+    }
   }
   function listNFT(nft) {
-    console.log('nft:', nft)
-    router.push(`/resell-nft?id=${nft.tokenId}&tokenURI=${nft.tokenURI}`)
+    console.log("nft:", nft);
+    router.push(`/resell-nft?id=${nft.tokenId}&tokenURI=${nft.tokenURI}`);
   }
-  if (loadingState === 'loaded' && !nfts.length) return (<h1 className="py-10 px-20 text-3xl">No NFTs owned</h1>)
+  if ((loadingState === "loaded" && !nfts.length) || !provider)
+    return (
+      <div className={styles.elementContainer}>
+        <h1 className="py-10 px-20 text-3xl">No NFTs owned</h1>
+      </div>
+    );
   return (
-    <div className="flex justify-center">
-      <div className="p-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
-          {
-            nfts.map((nft, i) => (
-              <div key={i} className="border shadow rounded-xl overflow-hidden">
-                <img src={nft.image} className="rounded" />
-                <div className="p-4 bg-black">
-                  <p className="text-2xl font-bold text-white">Price - {nft.price} Eth</p>
-                  <button className="mt-4 w-full bg-pink-500 text-white font-bold py-2 px-12 rounded" onClick={() => listNFT(nft)}>List</button>
+    <div className={styles.elementContainer}>
+      <div className="flex justify-center">
+        <div className="p-4">
+          <div className={styles.nftGrid}>
+            {nfts.map((nft, i) => (
+              <div
+                key={i}
+                className={`border shadow rounded-xl overflow-hidden ${styles.nft}`}
+              >
+                <div className={styles.nftImageWrapper}>
+                  <img src={nft.image} />
+                </div>
+                <div className={styles.titleNDesc}>
+                  <h1>{nft.name}</h1>
+                  <h4>{nft.price}</h4>
+                  <p className={styles.description}>{nft.description}</p>
+                  <button
+                    onClick={() => listNFT(nft)}
+                    className={styles.primaryButton}
+                  >
+                    List
+                  </button>
                 </div>
               </div>
-            ))
-          }
+            ))}
+          </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

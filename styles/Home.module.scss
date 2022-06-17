@@ -1,0 +1,247 @@
+@use "./color" as c;
+@import "./mixins";
+.navbar {
+  z-index: 9;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 7vh;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: c.$White;
+  color: c.$Black;
+  padding: 0 20px;
+  :global .nav-section {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    * {
+      width: 100%;
+      text-align: center;
+    }
+  }
+  :global .buttons {
+    gap: 1em;
+    padding: 0 0 0 1em;
+    box-sizing: border-box;
+    justify-content: end;
+    * {
+      max-width: 10vw;
+      max-height: 6vh;
+    }
+  }
+  .linkContainer {
+    display: flex;
+    justify-content: space-between;
+    gap: 1em;
+    align-items: center;
+    * {
+      margin: 0;
+    }
+  }
+  .logoNav {
+    max-height: 6vh;
+  }
+  h1 {
+    color: c.$DarkBlue;
+    width: 100%;
+    text-align: center;
+  }
+  @include desktop() {
+    flex-direction: column;
+    height: 10vh;
+    padding: 10px;
+    :global .buttons {
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      left: 0;
+      display: flex;
+      justify-content: center;
+      background-color: c.$White;
+      padding: 10px;
+      display: flex !important;
+      * {
+        max-width: fit-content;
+      }
+    }
+    > div {
+      width: 100%;
+    }
+    .logoNav {
+      max-width: 50%;
+    }
+    :global .nav-section {
+      display: none;
+    }
+  }
+}
+
+.jumbotron {
+  min-height: 100vh;
+  padding-top: 8vh;
+  background: linear-gradient(158deg, c.$DarkBlue 50%, c.$Pink 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .elementContainer {
+    background-color: c.$White;
+    border-radius: 15px;
+    color: c.$Black;
+    padding: 2em;
+    display: flex;
+    flex-direction: column;
+  }
+  > div {
+    z-index: 1;
+    box-sizing: border-box;
+    h1 {
+      text-align: center;
+    }
+    p {
+      text-align: justify;
+    }
+  }
+  :global .new-nft-jumbotron-section {
+    z-index: 1;
+  }
+  @include desktop() {
+    background: linear-gradient(340deg, c.$DarkBlue 10%, c.$Pink 100%);
+    :global .title-section {
+      order: 2;
+    }
+    .elementContainer {
+      padding: 5px;
+    }
+    flex-direction: column;
+    gap: 1em;
+    height: fit-content;
+    padding-bottom: 5%;
+    min-height: 100vh;
+    padding: 15vh 10px;
+  }
+}
+.nftGrid {
+  width: 80vw;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1em;
+  .nft {
+    -webkit-box-shadow: 0px 2px 15px -2px rgba(0, 0, 0, 0.67);
+    box-shadow: 0px 2px 15px -2px rgba(0, 0, 0, 0.67);
+    position: relative;
+    transition: all 0.5s;
+    padding: 10px;
+    background-color: white;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: space-between;
+    align-items: center;
+    .nftImageWrapper {
+      width: 100%;
+      flex-grow: 2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 5px;
+      background-color: c.$SectionBackground;
+      border-radius: 10px;
+      img {
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 10px;
+      }
+    }
+    .titleNDesc {
+      flex-grow: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.25em;
+      * {
+        margin: 0;
+      }
+      h1 {
+        text-align: left !important;
+        font-size: 1.5em;
+      }
+      h4 {
+        text-align: left !important;
+        font-size: 1.3em;
+      }
+      hr {
+        border-color: c.$DarkBlue;
+      }
+      .description {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-align: left;
+        width: 100%;
+        font-size: 0.8em;
+      }
+    }
+  }
+  @include desktop {
+    grid-template-columns: repeat(2, 1fr);
+    width: 100%;
+    padding: 0;
+  }
+}
+.createNftImage {
+  max-width: 100%;
+  max-height: 20vh;
+}
+.primaryButton {
+  background-color: c.$Pink;
+  border-radius: 10px;
+  color: c.$White;
+  box-sizing: border-box;
+  padding: 10px !important;
+  border-style: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-align: center;
+  width: 100%;
+  * {
+    margin: 0;
+  }
+  transition: all 0.5s;
+}
+.secondaryButton,
+.primaryButton:hover,
+.thirdButton:hover {
+  background-color: c.$White;
+  border-style: solid;
+  border-color: c.$Pink;
+  border-width: 1px;
+  border-radius: 10px;
+  color: c.$Pink;
+  padding: 1em;
+  transition: all 0.5s;
+  * {
+    margin: 0;
+  }
+}
+.thirdButton {
+  padding: 1em !important;
+  color: c.$Pink;
+  border-radius: 10px;
+  transition: all 0.5s;
+  * {
+    margin: 0;
+  }
+}
+.particles {
+  z-index: 0;
+}

@@ -1,0 +1,9 @@
+@use "./color" as c;
+
+/* ./styles/globals.css */ // @tailwind base;
+// @tailwind components;
+// @tailwind utilities;
+a {
+  text-decoration: none;
+  color: c.$Black;
+}
